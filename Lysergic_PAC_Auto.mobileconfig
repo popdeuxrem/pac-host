@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+
+    <key>PayloadType</key>
+    <string>Configuration</string>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+    <key>PayloadIdentifier</key>
+    <string>com.lysergic.proxy.master</string>
+    <key>PayloadUUID</key>
+    <string>8A8B9C70-33B7-412F-A2E1-0000LYSERGIC001</string>
+    <key>PayloadDisplayName</key>
+    <string>Lysergic PAC Proxy (Automatic)</string>
+
+    <key>PayloadContent</key>
+    <array>
+        <dict>
+            <key>PayloadType</key>
+            <string>com.apple.proxy.settings.managed</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+            <key>PayloadIdentifier</key>
+            <string>com.lysergic.proxy.pac</string>
+            <key>PayloadUUID</key>
+            <string>8A8B9C70-33B7-412F-A2E1-PAC-LYSERGIC1111</string>
+            <key>PayloadDisplayName</key>
+            <string>HTTP Proxy (PAC)</string>
+
+            <key>ProxyType</key>
+            <string>Auto</string>
+
+            <key>AutoProxyURLString</key>
+            <string>https://popdeuxrem.github.io/pac-host/proxy.pac</string>
+
+            <key>ProxiesSuppressedOnCellular</key>
+            <true/>
+
+            <key>ProxyPACFallbackAllowed</key>
+            <false/>
+        </dict>
+    </array>
+</dict>
+</plist>
