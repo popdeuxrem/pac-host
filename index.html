@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lysergic Leak Test Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+    body {
+        background: #0b0c0f;
+        color: #e5e5e5;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "Inter", sans-serif;
+        padding: 25px;
+    }
+    h1 { font-size: 32px; margin-bottom: 10px; color: #61dafb; }
+    h2 { margin-top: 30px; color: #9cdcfe; }
+    .block {
+        background: #14161a;
+        border: 1px solid #2a2d34;
+        padding: 16px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    .ok { color: #4caf50; font-weight: bold; }
+    .bad { color: #ff5252; font-weight: bold; }
+    .warn { color: #ffc107; font-weight: bold; }
+    code { color: #8be9fd; }
+</style>
+</head>
+
+<body>
+
+<h1>Lysergic Leak Test Dashboard</h1>
+<p>Comprehensive IPv4 / IPv6 / DNS / WebRTC / QUIC leak analysis for iOS devices.</p>
+
+<div class="block">
+    <h2>1. Public IP Test</h2>
+    <p>IPv4: <span id="ipv4">Testing…</span></p>
+    <p>IPv6: <span id="ipv6">Testing…</span></p>
+</div>
+
+<div class="block">
+    <h2>2. QUIC Detection</h2>
+    <p>Protocol: <span id="quic">Testing…</span></p>
+</div>
+
+<div class="block">
+    <h2>3. WebRTC Leak Test</h2>
+    <p>Your WebRTC Candidates:</p>
+    <pre id="webrtc" style="white-space:pre-wrap; background:#0f1114; padding:12px; border-radius:6px;"></pre>
+</div>
+
+<div class="block">
+    <h2>4. DNS Leak Check</h2>
+    <p>DNS Resolvers Detected:</p>
+    <pre id="dns" style="white-space:pre-wrap; background:#0f1114; padding:12px; border-radius:6px;"></pre>
+</div>
+
+<script>
+// 1. IPv4 Detection
+fetch("https://api.ipify.org?format=json")
+  .then(res => res.json())
+  .then(data => document.getElementById("ipv4").innerHTML = data.ip)
+  .catch(() => document.getElementById("ipv4").innerHTML = "<span class='bad'>Failed</span>");
+
+// 2. IPv6 Detection
+fetch("https://api64.ipify.org?format=json")
+  .then(res => res.json())
+  .then(data => document.getElementById("ipv6").innerHTML = data.ip)
+  .catch(() => document.getElementById("ipv6").innerHTML = "<span class='warn'>No IPv6 or Blocked</span>");
+
+// 3. QUIC Detection
+fetch("https://www.cloudflare.com/cdn-cgi/trace")
+  .then(r => r.text())
+  .then(txt => {
+    const match = txt.match(/proto=(.*)/);
+    const proto = match ? match[1] : "Unknown";
+    let out = proto;
+    if (proto.includes("h3")) out += " <span class='bad'>(QUIC Leak)</span>";
+    if (proto.includes("http/2")) out += " <span class='ok'>(OK)</span>";
+    document.getElementById("quic").innerHTML = out;
+  });
+
+// 4. WebRTC Leak Detection
+async function testWebRTC() {
+    let pc = new RTCPeerConnection({iceServers: [{urls:"stun:stun.l.google.com:19302"}]});
+    let candidates = [];
+
+    pc.onicecandidate = e => {
+        if (!e.candidate) {
+            document.getElementById("webrtc").textContent = candidates.join("\n") || "No candidates (WebRTC disabled or blocked)";
+            return;
+        }
+        candidates.push(e.candidate.candidate);
+    };
+
+    pc.createDataChannel("test");
+    let offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+}
+testWebRTC();
+
+// 5. DNS Leak (passive)
+fetch("https://dns.google/resolve?name=example.com&type=A")
+  .then(r => r.json())
+  .then(j => {
+      let servers = JSON.stringify(j, null, 2);
+      document.getElementById("dns").textContent = servers;
+  })
+  .catch(()=>{
+      document.getElementById("dns").textContent = "DNS test failed or blocked.";
+  });
+</script>
+
+</body>
+</html>
