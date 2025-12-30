@@ -43,8 +43,8 @@ function FindProxyForURL(url, host) {
 
     for (let i = 0; i < force.length; i++)
         if (dnsDomainIs(host, force[i]) || shExpMatch(host, "*." + force[i]))
-            return "PROXY 4.149.153.123:3128";
+            return "PROXY 144.125.164.158:8081";
 
     // ----- 4. DEFAULT FALLBACK CHAIN -----
-    return "PROXY 4.149.153.123:3128; PROXY 4.149.153.123:3128; DIRECT";
+    return "PROXY 144.125.164.158:8081; PROXY 144.125.164.158:8081; DIRECT";
 }
