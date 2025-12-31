@@ -43,8 +43,8 @@ function FindProxyForURL(url, host) {
 
     for (let i = 0; i < force.length; i++)
         if (dnsDomainIs(host, force[i]) || shExpMatch(host, "*." + force[i]))
-            return "PROXY 170.9.224.115:3128";
+            return "PROXY 170.9.13.229:3128";
 
     // ----- 4. DEFAULT FALLBACK CHAIN -----
-    return "PROXY 170.9.224.115:3128; PROXY 170.9.224.115:3128; DIRECT";
+    return "PROXY 170.9.13.229:3128; PROXY 170.9.13.229:3128; DIRECT";
 }
